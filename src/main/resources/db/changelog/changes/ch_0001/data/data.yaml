@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001
+      author: test
+      dbms: postgresql
+      runAlways: false # WARNING - remove this before prod - it will run every time with clean data during startup
+      changes:
+        - sqlFile:
+            - relativeToChangelogFile: true
+            - path: data.sql
