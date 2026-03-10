@@ -92,4 +92,17 @@ public class PeoplePageController {
         return "people/list";
     }
 
+    // DELETE person
+    @PostMapping("/{id}/delete")
+    public String deletePerson(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            peopleService.deleteById(id);
+            redirectAttributes.addFlashAttribute("message", "Person deleted successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error deleting person: " + e.getMessage());
+        }
+        return "redirect:/people";
+    }
+
 }

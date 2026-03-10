@@ -48,4 +48,9 @@ public class InfoRestServiceImpl implements InfoRestService {
     public Optional<People> findById(Long id) {
         return peopleRepository.findById(id);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        peopleRepository.deleteById(id);
+    }
 }

@@ -18,4 +18,6 @@ public interface InfoRestService {
     List<People> findAll();
 
     Optional<People> findById(Long id);
+
+    void deleteById(Long id);
 }
