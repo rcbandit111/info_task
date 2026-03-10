@@ -1,7 +1,7 @@
 package com.info.task.rest;
 
 import com.info.task.entity.People;
-import com.info.task.service.InfoRestService;
+import com.info.task.service.impl.InfoRestServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,10 @@ public class RestInternalController {
 
     private static final Logger LOG = LoggerFactory.getLogger(RestInternalController.class);
 
-    private final InfoRestService signupRestService;
+    private final InfoRestServiceImpl signupRestService;
 
     @Autowired
-    public RestInternalController(InfoRestService signupRestService){
+    public RestInternalController(InfoRestServiceImpl signupRestService){
         this.signupRestService = signupRestService;
     }
 

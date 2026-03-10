@@ -9,7 +9,7 @@
 <div class="container mt-4">
     <h1>People Management</h1>
 
-    <!-- Success message -->
+    <!-- Flash messages -->
     <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
@@ -30,7 +30,7 @@
         </div>
     </form>
 
-    <!-- Add new person button -->
+    <!-- Add new person -->
     <a th:href="@{/people/new}" class="btn btn-success mb-3">Add New Person</a>
 
     <!-- People table -->
@@ -40,6 +40,7 @@
             <th>ID</th>
             <th>Full Name</th>
             <th>PIN</th>
+            <th>Addresses / Emails</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -48,6 +49,10 @@
             <td th:text="${person.id}">1</td>
             <td th:text="${person.fullName}">John Doe</td>
             <td th:text="${person.pin}">1234567890</td>
+            <td>
+                <span th:text="${#lists.size(person.addresses)}"></span> addresses,
+                <span th:text="${#lists.size(person.mails)}"></span> emails
+            </td>
             <td>
                 <a th:href="@{'/people/' + ${person.id} + '/edit'}" class="btn btn-sm btn-warning">Edit</a>
                 <form th:action="@{'/people/' + ${person.id} + '/delete'}" method="post" style="display:inline;" onsubmit="return confirm('Delete this person?');">

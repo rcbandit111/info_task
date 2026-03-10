@@ -2,34 +2,151 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:if="${people.id == null}">Create Person</title>
-    <title th:if="${people.id != null}">Edit Person</title>
+    <title th:text="${people.id == null} ? 'Create Person' : 'Edit Person'">Person Form</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+        .remove-btn { margin-top: 1.5rem; }
+    </style>
 </head>
 <body>
 <div class="container mt-4">
-    <h1 th:if="${people.id == null}">Create New Person</h1>
-    <h1 th:if="${people.id != null}">Edit Person</h1>
+    <h1 th:text="${people.id == null} ? 'Create New Person' : 'Edit Person'"></h1>
 
-    <form th:action="${people.id == null} ? @{/people} : @{'/people/' + ${people.id}}" th:object="${people}" method="post" class="mt-3">
-        <!-- Hidden _method for PUT if needed; but we use POST to same URL with id -->
-        <div class="mb-3">
-            <label for="fullName" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
-                   th:errorclass="is-invalid" placeholder="Enter full name">
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+    <form th:action="${people.id == null} ? @{/people} : @{'/people/' + ${people.id}}"
+          th:object="${people}" method="post" class="mt-3">
+
+        <!-- Personal Information -->
+        <div class="card mb-3">
+            <div class="card-header">Personal Information</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
+                           th:errorclass="is-invalid" placeholder="Enter full name">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="pin" class="form-label">PIN (10 digits)</label>
+                    <input type="text" class="form-control" id="pin" th:field="*{pin}"
+                           th:errorclass="is-invalid" placeholder="Enter 10-digit PIN">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="pin" class="form-label">PIN (10 digits)</label>
-            <input type="text" class="form-control" id="pin" th:field="*{pin}"
-                   th:errorclass="is-invalid" placeholder="Enter 10-digit PIN">
-            <div class="invalid-feedback" th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}"></div>
+        <!-- Addresses -->
+        <div class="card mb-3">
+            <div class="card-header">
+                Addresses
+                <button type="button" class="btn btn-sm btn-success float-end" onclick="addAddress()">Add Address</button>
+            </div>
+            <div class="card-body" id="addresses-container">
+                <table class="table table-bordered" id="addresses-table">
+                    <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Info</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="addr, iter : *{addresses}">
+                        <td>
+                            <input type="text" class="form-control" th:field="*{addresses[__${iter.index}__].addrType}" placeholder="e.g. HOME">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" th:field="*{addresses[__${iter.index}__].addrInfo}" placeholder="Address">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, 'addresses')">Remove</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Emails -->
+        <div class="card mb-3">
+            <div class="card-header">
+                Emails
+                <button type="button" class="btn btn-sm btn-success float-end" onclick="addEmail()">Add Email</button>
+            </div>
+            <div class="card-body" id="emails-container">
+                <table class="table table-bordered" id="emails-table">
+                    <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="mail, iter : *{mails}">
+                        <td>
+                            <input type="text" class="form-control" th:field="*{mails[__${iter.index}__].emailType}" placeholder="e.g. WORK">
+                        </td>
+                        <td>
+                            <input type="email" class="form-control" th:field="*{mails[__${iter.index}__].email}" placeholder="email@example.com">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, 'mails')">Remove</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
         <a th:href="@{/people}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+<script>
+    function addAddress() {
+        var table = document.getElementById('addresses-table').getElementsByTagName('tbody')[0];
+        var rowCount = table.rows.length;
+        var newRow = table.insertRow(rowCount);
+        newRow.innerHTML = `
+            <td><input type="text" class="form-control" name="addresses[${rowCount}].addrType" placeholder="e.g. HOME"></td>
+            <td><input type="text" class="form-control" name="addresses[${rowCount}].addrInfo" placeholder="Address"></td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, 'addresses')">Remove</button></td>
+        `;
+    }
+
+    function addEmail() {
+        var table = document.getElementById('emails-table').getElementsByTagName('tbody')[0];
+        var rowCount = table.rows.length;
+        var newRow = table.insertRow(rowCount);
+        newRow.innerHTML = `
+            <td><input type="text" class="form-control" name="mails[${rowCount}].emailType" placeholder="e.g. WORK"></td>
+            <td><input type="email" class="form-control" name="mails[${rowCount}].email" placeholder="email@example.com"></td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this, 'mails')">Remove</button></td>
+        `;
+    }
+
+    function removeRow(btn, type) {
+        var row = btn.closest('tr');
+        row.remove();
+        renumberRows(type);
+    }
+
+    function renumberRows(type) {
+        var table = document.getElementById(type + '-table');
+        if (!table) return;
+        var rows = table.getElementsByTagName('tbody')[0].rows;
+        for (var i = 0; i < rows.length; i++) {
+            var inputs = rows[i].getElementsByTagName('input');
+            if (type === 'addresses') {
+                inputs[0].name = `addresses[${i}].addrType`;
+                inputs[1].name = `addresses[${i}].addrInfo`;
+            } else if (type === 'mails') {
+                inputs[0].name = `mails[${i}].emailType`;
+                inputs[1].name = `mails[${i}].email`;
+            }
+        }
+    }
+</script>
 </body>
 </html>
